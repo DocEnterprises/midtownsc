@@ -1,0 +1,48 @@
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.slot-machine-container {
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.6)
+  );
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.1),
+    inset 0 0 10px rgba(255, 215, 0, 0.05);
+}
+
+.slot-reel {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 215, 0, 0.1),
+    rgba(255, 215, 0, 0.05)
+  );
+  box-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.1),
+    inset 0 0 5px rgba(255, 215, 0, 0.05);
+}
+
+.slot-symbol {
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+}
+
+.spin-button {
+  background: linear-gradient(
+    45deg,
+    #4f46e5,
+    #7c3aed
+  );
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s ease;
+}
+
+.spin-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+.spin-button:active {
+  transform: translateY(1px);
+}
