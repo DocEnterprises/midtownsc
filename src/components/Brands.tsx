@@ -4,43 +4,43 @@ import { motion } from 'framer-motion';
 const brands = [
   {
     name: 'Cookies',
-    logo: 'https://images.unsplash.com/photo-1585166059782-fb2b2c71a458?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Connected',
-    logo: 'https://images.unsplash.com/photo-1585166059717-e563e11a6f9f?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Alien Labs',
-    logo: 'https://images.unsplash.com/photo-1585166059651-1dd42d73c7c7?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1738597222683-4c38bbf2cc3b?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Raw Garden',
-    logo: 'https://images.unsplash.com/photo-1585166059544-9e8d1b26c456?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://plus.unsplash.com/premium_photo-1673141390222-2bd01b623bf3?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Jungle Boys',
-    logo: 'https://images.unsplash.com/photo-1585166059773-d53a2f3e19c5?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1694969911759-0f7c7cbc6a8e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: '710 Labs',
-    logo: 'https://images.unsplash.com/photo-1585166059862-89a34b3e2f6d?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Stiiizy',
-    logo: 'https://images.unsplash.com/photo-1585166059849-d4a0df03d2f7?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1587920908850-43f1956dad74?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Jeeter',
-    logo: 'https://images.unsplash.com/photo-1585166059836-8d3e3b0e7f9c?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1624355209556-98f79a93fb7a?q=80&w=2003&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Wonderbrett',
-    logo: 'https://images.unsplash.com/photo-1585166059823-4f3e0e0c8b8a?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1673077961256-5e113fb53254?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     name: 'Source Cannabis',
-    logo: 'https://images.unsplash.com/photo-1585166059810-4d3e0e0c8b8b?auto=format&fit=crop&q=80&w=200'
+    logo: 'https://images.unsplash.com/photo-1722684768321-7f4189f5e219?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }
 ];
 

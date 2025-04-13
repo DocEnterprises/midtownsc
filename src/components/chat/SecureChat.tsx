@@ -1,24 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, Phone, Video, MinusCircle } from 'lucide-react';
-import { useStore } from '../../store/useStore';
-import { MessageEncryption } from '../../lib/crypto/MessageEncryption';
-import { format } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  MessageCircle,
+  Send,
+  X,
+  Phone,
+  Video,
+  MinusCircle,
+  PlusCircle,
+} from "lucide-react";
+import { useStore } from "../../store/useStore";
+import { MessageEncryption } from "../../lib/crypto/MessageEncryption";
+import { format } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
 
 interface Message {
   id: string;
   senderId: string;
   content: string;
   timestamp: number;
-  type: 'text' | 'system';
+  type: "text" | "system";
   encrypted?: boolean;
 }
 
 const SecureChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionKey] = useState(() => uuidv4());
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,30 +37,33 @@ const SecureChat: React.FC = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
     if (isOpen) {
-      addSystemMessage('Secure chat initialized with end-to-end encryption');
+      addSystemMessage("Secure chat initialized with end-to-end encryption");
     }
   }, [isOpen]);
 
   const addSystemMessage = (content: string) => {
-    setMessages(prev => [...prev, {
-      id: `sys-${uuidv4()}`,
-      senderId: 'system',
-      content,
-      timestamp: Date.now(),
-      type: 'system'
-    }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `sys-${uuidv4()}`,
+        senderId: "system",
+        content,
+        timestamp: Date.now(),
+        type: "system",
+      },
+    ]);
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,27 +74,33 @@ const SecureChat: React.FC = () => {
     if (!message.trim() || !user) return;
 
     try {
-      const { encrypted, key } = await MessageEncryption.encrypt(message, sessionKey);
+      const { encrypted, key } = await MessageEncryption.encrypt(
+        message,
+        sessionKey
+      );
       const decrypted = await MessageEncryption.decrypt(encrypted, key);
 
-      setMessages(prev => [...prev, {
-        id: `msg-${uuidv4()}`,
-        senderId: user.id,
-        content: decrypted,
-        timestamp: Date.now(),
-        type: 'text',
-        encrypted: true
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-${uuidv4()}`,
+          senderId: user.id,
+          content: decrypted,
+          timestamp: Date.now(),
+          type: "text",
+          encrypted: true,
+        },
+      ]);
 
-      setMessage('');
+      setMessage("");
     } catch (error) {
-      console.error('Error sending message:', error);
-      addSystemMessage('Error sending message. Please try again.');
+      console.error("Error sending message:", error);
+      addSystemMessage("Error sending message. Please try again.");
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -91,9 +108,13 @@ const SecureChat: React.FC = () => {
 
   if (!user) return null;
 
-  const chatWidth = isMobile ? 'w-full' : 'w-96';
-  const chatHeight = isMobile ? 'h-[100dvh]' : (isMinimized ? 'h-14' : 'h-[600px]');
-  const chatPosition = isMobile ? 'inset-0' : 'bottom-6 right-6';
+  const chatWidth = isMobile ? "w-full" : "w-96";
+  const chatHeight = isMobile
+    ? "h-[100dvh]"
+    : isMinimized
+    ? "h-14"
+    : "h-[400px]";
+  const chatPosition = isMobile ? "inset-0" : "bottom-6 right-6";
 
   return (
     <>
@@ -125,18 +146,26 @@ const SecureChat: React.FC = () => {
                 <button className="p-2 hover:bg-white/10 rounded-full">
                   <Phone className="w-4 h-4" />
                 </button>
-                <button className="p-2 hover:bg-white/10 rounded-full">
-                  <Video className="w-4 h-4" />
-                </button>
                 {!isMobile && (
-                  <button 
-                    className="p-2 hover:bg-white/10 rounded-full"
-                    onClick={() => setIsMinimized(!isMinimized)}
-                  >
-                    <MinusCircle className="w-4 h-4" />
-                  </button>
+                  <>
+                    {!isMinimized ? (
+                      <button
+                        className="p-2 hover:bg-white/10 rounded-full"
+                        onClick={() => setIsMinimized(true)}
+                      >
+                        <MinusCircle className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        className="p-2 hover:bg-white/10 rounded-full"
+                        onClick={() => setIsMinimized(false)}
+                      >
+                        <PlusCircle className="w-4 h-4" />
+                      </button>
+                    )}
+                  </>
                 )}
-                <button 
+                <button
                   className="p-2 hover:bg-white/10 rounded-full"
                   onClick={() => {
                     setIsOpen(false);
@@ -151,26 +180,28 @@ const SecureChat: React.FC = () => {
             {!isMinimized && (
               <>
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 h-[calc(100%-8rem)]">
-                  {messages.map(msg => (
+                  {messages.map((msg) => (
                     <div
                       key={msg.id}
                       className={`flex ${
-                        msg.senderId === user.id ? 'justify-end' : 'justify-start'
+                        msg.senderId === user.id
+                          ? "justify-end"
+                          : "justify-start"
                       }`}
                     >
                       <div
                         className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                          msg.type === 'system'
-                            ? 'bg-gray-500/20 text-gray-300 text-sm text-center w-full'
+                          msg.type === "system"
+                            ? "bg-gray-500/20 text-gray-300 text-sm text-center w-full"
                             : msg.senderId === user.id
-                            ? 'bg-purple-500'
-                            : 'bg-white/10'
+                            ? "bg-purple-500"
+                            : "bg-white/10"
                         }`}
                       >
                         <p>{msg.content}</p>
                         <div className="flex items-center justify-end space-x-2 mt-1">
                           <span className="text-xs text-gray-300">
-                            {format(msg.timestamp, 'HH:mm')}
+                            {format(msg.timestamp, "HH:mm")}
                           </span>
                           {msg.encrypted && (
                             <span className="text-xs text-green-400">•</span>

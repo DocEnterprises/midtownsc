@@ -19,13 +19,14 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'https://unsplash.com/photos/airplane-skyline-horizon-flight-cloud-concept-qs5Yd2-USos',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'brightness(0.4)'
+          backgroundImage:
+            "https://unsplash.com/photos/airplane-skyline-horizon-flight-cloud-concept-qs5Yd2-USos",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "brightness(0.4)",
         }}
       />
 
@@ -43,26 +44,15 @@ const Hero = () => {
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Elevate your experience with New York's premier cannabis collective
           </p>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="button-primary"
             onClick={handleButtonClick}
           >
-            {user ? 'Enter Cockpit' : 'Join the Club'}
+            {user ? "Enter Cockpit" : "Join the Club"}
           </motion.button>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-white/50 rounded-full" />
-          </div>
         </motion.div>
       </div>
     </section>

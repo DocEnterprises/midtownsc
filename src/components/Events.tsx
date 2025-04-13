@@ -13,7 +13,7 @@ const events = [
     time: '7:00 PM EST',
     location: 'Manhattan Private Lounge',
     description: 'Join us for an exclusive evening of cannabis and cuisine pairing',
-    image: 'https://images.unsplash.com/photo-1617375407936-02c78ad417b8?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     capacity: 50,
     rsvpCount: 32,
     details: {
