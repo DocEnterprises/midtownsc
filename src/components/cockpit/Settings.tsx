@@ -5,9 +5,9 @@ import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import AddPaymentMethod from './AddPaymentMethod';
 import AddDeliveryAddress from './AddDeliveryAddress';
-import { storage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { db, storage } from '../../lib/firebase';
 import toast from 'react-hot-toast';
 import imageCompression from 'browser-image-compression';
 
