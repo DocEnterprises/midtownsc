@@ -22,18 +22,20 @@ import PromoPopup from './components/PromoPopup';
 import Terms from './pages/legal/Terms';
 import Privacy from './pages/legal/Privacy';
 import { ChatProvider } from './components/chat/ChatProvider';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { 
-    isPasswordVerified, 
-    isAgeVerified, 
+  const {
+    isPasswordVerified,
+    isAgeVerified,
     isAuthModalOpen,
     closeAuthModal,
     isCartOpen,
     toggleCart,
     user,
-    darkMode 
+    darkMode,
   } = useStore();
 
   useEffect(() => {
@@ -49,65 +51,70 @@ const App: React.FC = () => {
     return <LoadingScreen />;
   }
 
-  if (!isPasswordVerified) {
-    return <PasswordProtection onVerify={() => useStore.setState({ isPasswordVerified: true })} />;
-  }
+  // if (!isPasswordVerified) {
+  //   return <PasswordProtection onVerify={() => useStore.setState({ isPasswordVerified: true })} />;
+  // }
 
-  if (!isAgeVerified) {
-    return <AgeVerification onVerify={(verified) => useStore.setState({ isAgeVerified: verified })} />;
-  }
+  // if (!isAgeVerified) {
+  //   return (
+  //     <AgeVerification
+  //       onVerify={(verified) => useStore.setState({ isAgeVerified: verified })}
+  //     />
+  //   );
+  // }
+
+  const stripePromise = loadStripe(process.env.VITE_STRIPE_PUBLIC_KEY!);
 
   return (
-    <Router>
-      <ChatProvider>
-        <div className={`min-h-screen bg-gradient-to-b from-gray-900 to-blue-900 text-white ${darkMode ? 'dark' : ''}`}>
-          <Navigation />
-          
-          <Routes>
-            <Route path="/" element={
-              <main className="relative">
-                <Hero />
-                <Products />
-                <Brands />
-                <About />
-                <Events />
-                <Newsletter />
-              </main>
-            } />
-            
-            <Route 
-              path="/cockpit" 
-              element={
-                user ? <Dashboard /> : <Navigate to="/" replace />
-              } 
-            />
+    <Elements stripe={stripePromise}>
+      <Router>
+        <ChatProvider>
+          <div
+            className={`min-h-screen bg-gradient-to-b from-gray-900 to-blue-900 text-white ${
+              darkMode ? "dark" : ""
+            }`}
+          >
+            <Navigation />
 
-            <Route 
-              path="/settings" 
-              element={
-                user ? <Settings /> : <Navigate to="/" replace />
-              } 
-            />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <main className="relative">
+                    <Hero />
+                    <Products />
+                    <Brands />
+                    <About />
+                    <Events />
+                    <Newsletter />
+                  </main>
+                }
+              />
 
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Routes>
+              <Route
+                path="/cockpit"
+                element={user ? <Dashboard /> : <Navigate to="/" replace />}
+              />
 
-          <Footer />
-          <AuthModal 
-            isOpen={isAuthModalOpen} 
-            onClose={closeAuthModal} 
-          />
-          <Cart 
-            isOpen={isCartOpen}
-            onClose={toggleCart}
-          />
-          <SecureChat />
-          {user?.email === 'admin@skyclub.com' && <AdminChat />}
-          <PromoPopup />
-        </div>
-      </ChatProvider>
-    </Router>
+              <Route
+                path="/settings"
+                element={user ? <Settings /> : <Navigate to="/" replace />}
+              />
+
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+            </Routes>
+
+            <Footer />
+            <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
+            <Cart isOpen={isCartOpen} onClose={toggleCart} />
+            <SecureChat />
+            {user?.email === "admin@skyclub.com" && <AdminChat />}
+            <PromoPopup />
+          </div>
+        </ChatProvider>
+      </Router>
+    </Elements>
   );
 };
 

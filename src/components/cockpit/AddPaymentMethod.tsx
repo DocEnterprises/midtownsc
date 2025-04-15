@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard } from 'lucide-react';
+import { X } from "lucide-react";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useStore } from '../../store/useStore';
 
 interface Props {
@@ -9,39 +10,59 @@ interface Props {
 }
 
 const AddPaymentMethod: React.FC<Props> = ({ isOpen, onClose }) => {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+  const stripe = useStripe();
+  const elements = useElements();
   const { user, setUser } = useStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) return;
+    setError("");
+    setLoading(true);
 
-    const last4 = cardNumber.slice(-4);
-    const type = getCardType(cardNumber);
+    if (!stripe || !elements || !user) {
+      setError("Stripe has not loaded yet.");
+      setLoading(false);
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+
+    if (!cardElement) {
+      setError("Card Element not found");
+      setLoading(false);
+      return;
+    }
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+    });
+
+    if (error) {
+      setError(error.message || "Failed to create payment method");
+      setLoading(false);
+      return;
+    }
+
+    const last4 = paymentMethod.card?.last4 || "";
+    const type = paymentMethod.card?.brand || "Card";
 
     const newMethod = {
-      id: `pm-${Date.now()}`,
+      id: paymentMethod.id,
       last4,
       type,
-      isDefault: user.paymentMethods.length === 0
+      isDefault: user.paymentMethods.length === 0,
     };
 
     setUser({
       ...user,
-      paymentMethods: [...user.paymentMethods, newMethod]
+      paymentMethods: [...user.paymentMethods, newMethod],
     });
 
+    setLoading(false);
     onClose();
-  };
-
-  const getCardType = (number: string): string => {
-    if (number.startsWith('4')) return 'Visa';
-    if (number.startsWith('5')) return 'Mastercard';
-    if (number.startsWith('3')) return 'American Express';
-    return 'Card';
   };
 
   return (
@@ -73,58 +94,32 @@ const AddPaymentMethod: React.FC<Props> = ({ isOpen, onClose }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Card Number
-                </label>
-                <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
-                    maxLength={16}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:border-purple-500"
-                    placeholder="1234 5678 9012 3456"
-                    required
-                  />
-                </div>
+              <label className="block text-sm font-medium mb-1">
+                Card Details
+              </label>
+              <div className="border border-white/20 rounded-lg bg-white/10 p-3">
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        color: "#fff",
+                        fontSize: "16px",
+                        "::placeholder": { color: "#a0aec0" },
+                      },
+                      invalid: { color: "#e53e3e" },
+                    },
+                  }}
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    placeholder="MM/YY"
-                    maxLength={5}
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:border-purple-500"
-                    required
-                  />
-                </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
-                    placeholder="123"
-                    maxLength={4}
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:border-purple-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <button type="submit" className="w-full button-primary">
-                Add Payment Method
+              <button
+                type="submit"
+                className="w-full button-primary"
+                disabled={loading || !stripe}
+              >
+                {loading ? "Adding..." : "Add Payment Method"}
               </button>
             </form>
           </motion.div>

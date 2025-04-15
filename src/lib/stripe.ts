@@ -1,5 +1,6 @@
-import { loadStripe } from '@stripe/stripe-js';
-import type { Stripe } from '@stripe/stripe-js';
+// src/lib/stripe.ts
+import { loadStripe } from "@stripe/stripe-js";
+import type { Stripe } from "@stripe/stripe-js";
 
 let stripePromise: Promise<Stripe | null> | null = null;
 
@@ -12,83 +13,111 @@ export const getStripe = () => {
 
 export const createPaymentIntent = async ({
   amount,
-  currency = 'usd',
+  currency = "usd",
   description,
-  metadata
+  metadata,
 }: {
   amount: number;
   currency?: string;
   description?: string;
   metadata?: Record<string, string>;
 }) => {
-  const response = await fetch('/api/create-payment-intent', {
-    method: 'POST',
+  const storage = localStorage.getItem("skyclub-storage");
+  const email = storage ? JSON.parse(storage)?.state?.user?.email : undefined;
+
+  console.log("Received email:", email);
+  console.log("Received storage:", storage);
+
+  // add email to metadata if it exists
+  if (email) {
+    metadata = { ...metadata, email };
+  }
+
+  const response = await fetch("/.netlify/functions/create-payment-intent", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       amount,
       currency,
       description,
-      metadata
+      metadata,
     }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create payment intent');
+    const errorData = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(errorData.error || "Failed to create payment intent");
   }
 
   return await response.json();
 };
 
-export const handlePaymentWithStripe = async ({
-  amount,
-  currency = 'usd',
-  paymentMethodId,
-  description,
-  metadata
-}: {
-  amount: number;
-  currency?: string;
-  paymentMethodId: string;
-  description?: string;
-  metadata?: Record<string, string>;
-}) => {
+export const handlePaymentWithStripe = async (
+  paymentMethodId: string,
+  amount: number,
+  description?: string
+) => {
   try {
+    // 1. Create payment intent on server
+    const paymentIntentResponse = await createPaymentIntent({
+      amount,
+      currency: "usd",
+      description,
+      metadata: {
+        payment_method_id: paymentMethodId,
+      },
+    });
+    // 2. Get stripe instance
     const stripe = await getStripe();
     if (!stripe) {
-      throw new Error('Stripe failed to initialize');
+      throw new Error("Stripe failed to initialize");
     }
 
-    const paymentIntent = await createPaymentIntent({
-      amount,
-      currency,
-      description,
-      metadata
-    });
-
-    const { error, paymentIntent: confirmedIntent } = await stripe.confirmCardPayment(
-      paymentIntent.client_secret,
+    // 3. Confirm the payment
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      paymentIntentResponse.client_secret,
       {
-        payment_method: paymentMethodId
+        payment_method: paymentMethodId,
       }
     );
 
     if (error) {
-      throw error;
+      console.error("Payment confirmation error:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
     }
 
-    return confirmedIntent;
+    if (paymentIntent.status === "succeeded") {
+      return {
+        success: true,
+        paymentIntent,
+      };
+    } else {
+      return {
+        success: false,
+        error: `Payment status: ${paymentIntent.status}`,
+      };
+    }
   } catch (error) {
-    console.error('Payment error:', error);
-    throw error;
+    console.error("Payment error:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
   }
 };
 
 export const handleStripeCheckout = async (sessionId: string) => {
   const stripe = await getStripe();
   if (!stripe) {
-    throw new Error('Stripe failed to initialize');
+    throw new Error("Stripe failed to initialize");
   }
 
   const { error } = await stripe.redirectToCheckout({ sessionId });
@@ -99,6 +128,7 @@ export const handleStripeCheckout = async (sessionId: string) => {
 
 export const createCheckoutSession = async (data: {
   items: Array<{
+    id: string;
     name: string;
     price: number;
     quantity: number;
@@ -106,17 +136,48 @@ export const createCheckoutSession = async (data: {
   }>;
   customer_email?: string;
 }) => {
-  const response = await fetch('/api/create-checkout-session', {
-    method: 'POST',
+  const response = await fetch("/api/create-checkout-session", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create checkout session');
+    const errorData = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(errorData.error || "Failed to create checkout session");
   }
 
   return await response.json();
+};
+
+export const processCheckout = async (
+  items: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+  }>,
+  email?: string
+) => {
+  try {
+    const { sessionId, url } = await createCheckoutSession({
+      items,
+      customer_email: email,
+    });
+
+    // Redirect to Stripe Checkout
+    window.location.href = url;
+    return { success: true, sessionId };
+  } catch (error) {
+    console.error("Checkout error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Checkout failed",
+    };
+  }
 };

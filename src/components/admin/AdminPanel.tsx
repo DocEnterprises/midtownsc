@@ -34,7 +34,7 @@ const AdminPanel: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Top Bar */}
-      <div className="sticky top-0 z-40 glass backdrop-blur-lg border-b border-white/10">
+      <div className="sticky top-0 glass backdrop-blur-lg border-b border-white/10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold">Admin Dashboard</h1>
@@ -47,7 +47,7 @@ const AdminPanel: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <button className="p-2 hover:bg-white/10 rounded-full relative">
               <Bell className="w-5 h-5" />
@@ -97,14 +97,14 @@ const AdminPanel: React.FC = () => {
       {/* Tabs */}
       <div className="container mx-auto px-4">
         <div className="flex space-x-2 mb-6 overflow-x-auto">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-full flex items-center space-x-2 ${
                 activeTab === tab.id
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-white/10 hover:bg-white/20'
+                  ? "bg-purple-500 text-white"
+                  : "bg-white/10 hover:bg-white/20"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -115,11 +115,11 @@ const AdminPanel: React.FC = () => {
 
         {/* Tab Content */}
         <div className="glass rounded-2xl p-6">
-          {activeTab === 'products' && <ProductManager />}
-          {activeTab === 'media' && <MediaManager />}
-          {activeTab === 'promotions' && <PromotionsManager />}
-          {activeTab === 'orders' && <OrdersManager />}
-          {activeTab === 'analytics' && <AnalyticsPanel />}
+          {activeTab === "products" && <ProductManager />}
+          {activeTab === "media" && <MediaManager />}
+          {activeTab === "promotions" && <PromotionsManager />}
+          {activeTab === "orders" && <OrdersManager />}
+          {activeTab === "analytics" && <AnalyticsPanel />}
         </div>
       </div>
     </div>
