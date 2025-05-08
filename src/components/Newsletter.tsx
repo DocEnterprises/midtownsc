@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight } from 'lucide-react';
+import { subscribeToNewsletter } from "../lib/newsletter/newsletter";
+import toast from "react-hot-toast";
 
 const Newsletter = () => {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
-    
-    // Simulate API call
-    setTimeout(() => {
-      setStatus('success');
-      setEmail('');
-      setTimeout(() => setStatus('idle'), 3000);
-    }, 1000);
+    setStatus("loading");
+    setErrorMsg("");
+
+    const result = await subscribeToNewsletter(email);
+
+    if (result.success) {
+      setStatus("success");
+      setEmail("");
+      toast.success("Subscribed successfully!");
+      setTimeout(() => setStatus("idle"), 3000);
+    } else {
+      setStatus("error");
+      setErrorMsg(result.message || "Failed to subscribe");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
   };
 
   return (
@@ -32,8 +44,8 @@ const Newsletter = () => {
             Join the Inner Circle
           </h2>
           <p className="text-gray-300 mb-8 max-w-xl mx-auto">
-            Subscribe to receive exclusive offers, early access to new products, and
-            invitations to members-only events.
+            Subscribe to receive exclusive offers, early access to new products,
+            and invitations to members-only events.
           </p>
 
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -49,18 +61,21 @@ const Newsletter = () => {
               />
               <button
                 type="submit"
-                disabled={status === 'loading'}
+                disabled={status === "loading"}
                 className="button-primary !px-6"
               >
-                {status === 'loading' ? (
+                {status === "loading" ? (
                   <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : status === 'success' ? (
-                  'Subscribed!'
+                ) : status === "success" ? (
+                  "Subscribed!"
                 ) : (
                   <ArrowRight className="w-6 h-6" />
                 )}
               </button>
             </div>
+            {status === "error" && (
+              <p className="text-red-400 text-sm mt-2">{errorMsg}</p>
+            )}
           </form>
         </motion.div>
       </div>

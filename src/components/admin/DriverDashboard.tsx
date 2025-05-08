@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, MapPin, Phone, Navigation2 } from 'lucide-react';
+import { Package, MapPin, Phone } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
 interface Order {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, DollarSign, Users, TrendingUp, Calendar } from 'lucide-react';
+import { Package, DollarSign, Users, TrendingUp } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import {
   LineChart,

@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { useStore } from '../../store/useStore';
+import { useStore } from "../../store/useStore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getFirestore,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 interface Props {
   isOpen: boolean;
@@ -16,6 +25,8 @@ const AddPaymentMethod: React.FC<Props> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const db = getFirestore();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -28,7 +39,6 @@ const AddPaymentMethod: React.FC<Props> = ({ isOpen, onClose }) => {
     }
 
     const cardElement = elements.getElement(CardElement);
-
     if (!cardElement) {
       setError("Card Element not found");
       setLoading(false);
@@ -56,13 +66,35 @@ const AddPaymentMethod: React.FC<Props> = ({ isOpen, onClose }) => {
       isDefault: user.paymentMethods.length === 0,
     };
 
-    setUser({
-      ...user,
-      paymentMethods: [...user.paymentMethods, newMethod],
-    });
+    try {
+      setUser({
+        ...user,
+        paymentMethods: [...user.paymentMethods, newMethod],
+      });
 
-    setLoading(false);
-    onClose();
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", user.email)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        throw new Error("User not found in database.");
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const userRef = userDoc.ref;
+
+      await updateDoc(userRef, {
+        paymentMethods: arrayUnion(newMethod),
+      });
+      onClose();
+    } catch (err) {
+      console.log("Failed to update payment methods in Firestore:", err);
+      setError("Server error updating payment method.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

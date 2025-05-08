@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Product } from "./types";
 import { productService } from "../../services/admin/productService";
 import ProductForm from "./ProductForm";

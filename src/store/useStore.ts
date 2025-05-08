@@ -3,11 +3,14 @@ import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 
 interface UserProfile {
+  isAdmin?: boolean;
+  isDriver?: boolean;
+  isCustomer?: boolean;
   id: string;
   name: string;
   email: string;
   isVerified: boolean;
-  membershipLevel: 'economy' | 'premium economy' | 'business' | 'first class';
+  membershipLevel: "economy" | "premium economy" | "business" | "first class";
   points: number;
   skyBucks: number;
   deliveryAddresses: Array<{
